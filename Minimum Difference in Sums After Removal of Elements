@@ -1,0 +1,32 @@
+import heapq
+
+class Solution:
+    def minimumDifference(self, nums):
+        n = len(nums) // 3
+
+        right_heap = []
+        right_sum = sum(nums[2 * n:])
+        for num in nums[2 * n:]:
+            heapq.heappush(right_heap, num)
+
+        right_sums = [0] * (n + 1)
+        right_sums[n] = right_sum
+
+        for i in range(2 * n - 1, n - 1, -1):
+            heapq.heappush(right_heap, nums[i])
+            right_sum += nums[i] - heapq.heappop(right_heap)
+            right_sums[i - n] = right_sum
+
+        left_heap = []
+        left_sum = sum(nums[:n])
+        for num in nums[:n]:
+            heapq.heappush(left_heap, -num)
+
+        result = left_sum - right_sums[0]
+
+        for i in range(n, 2 * n):
+            heapq.heappush(left_heap, -nums[i])
+            left_sum += nums[i] + heapq.heappop(left_heap)
+            result = min(result, left_sum - right_sums[i - n + 1])
+
+        return result
